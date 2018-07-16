@@ -7,5 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "palaniraja",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "turndown": "^4.0.2",
+    "xml2js": "^0.4.19"
+  }
 }
