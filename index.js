@@ -67,6 +67,12 @@ fs.readFile(process.argv[2], function(err, data) {
 
             posts.forEach(function(entry){
                 var title = entry.title[0]['_'];
+                // title = tds.turndown(title);
+                title = title.replace(/"/g, '\\"');
+                // title = title.replace(/'/g, "\\'");
+                // title = title.replace(/:/g, "\\:");
+                // title = title.replace(/\[/g, '\\[');
+                // title = title.replace(/\]/g, '\\]');
                 var published = entry.published;
                 var draft = 'false';
 
@@ -85,7 +91,7 @@ fs.readFile(process.argv[2], function(err, data) {
                 // console.dir(urlLink[0]);
                 if (urlLink && urlLink[0] && urlLink[0]['$'] && urlLink[0]['$'].href){
                     url = urlLink[0]['$'].href;
-                    var fname = path.basename(url);
+                    var fname = 'out/'+path.basename(url);
                     fname = fname.replace('.html', '.md')
                     console.log(fname);
 
@@ -98,7 +104,7 @@ fs.readFile(process.argv[2], function(err, data) {
                         console.log("\n\n\n\n\n");
                     }
 
-                    const dest = fs.writeFile(fname, `---\ntitle: "${title}"\ndate: ${published}\ndraft: false\n---\n${markdown}`, function(err){
+                    const dest = fs.writeFile(fname, `---\ntitle: ${title}\ndate: ${published}\ndraft: false\n---\n${markdown}`, function(err){
                         if(err){
                             console.log(`Error while writing to ${fname} - ${err}`);
                             console.dir(err);
