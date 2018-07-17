@@ -35,6 +35,16 @@ if (process.argv.length < 4){
 }
 
 
+var outputDir = process.argv[3];
+
+if (fs.existsSync(outputDir)) {
+    console.log(`WARNING: Given output directory "${outputDir}" already exists. Files will be overwritten.`)
+}
+else{
+    fs.mkdirSync(outputDir);
+}
+
+
 
 
  
@@ -97,7 +107,7 @@ fs.readFile(process.argv[2], function(err, data) {
                 // console.dir(urlLink[0]);
                 if (urlLink && urlLink[0] && urlLink[0]['$'] && urlLink[0]['$'].href){
                     url = urlLink[0]['$'].href;
-                    var fname = 'out/'+path.basename(url);
+                    var fname = outputDir+'/'+path.basename(url);
                     fname = fname.replace('.html', '.md')
                     console.log(fname);
 
