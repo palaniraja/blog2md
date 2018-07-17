@@ -60,15 +60,21 @@ fs.readFile(process.argv[2], function(err, data) {
                 return entry.id[0].indexOf('.post-')!=-1 && entry['thr:in-reply-to']
             });
 
-            console.dir(posts);
+            // console.dir(posts);
 
             console.log(`Content-posts ${posts.length}`);
             console.log(`Content-Comments ${comments.length}`);
 
+             var content = '';
+             var markdown = '';
+
             posts.forEach(function(entry){
                 var title = entry.title[0]['_'];
                 // title = tds.turndown(title);
-                title = title.replace(/'/g, "''");
+                if (title && title.indexOf("'")){
+                     title = title.replace(/'/g, "''");
+                }
+                
                 // title = title.replace(/'/g, "\\'");
                 // title = title.replace(/:/g, "\\:");
                 // title = title.replace(/\[/g, '\\[');
@@ -97,14 +103,37 @@ fs.readFile(process.argv[2], function(err, data) {
 
                     if (entry.content && entry.content[0] && entry.content[0]['_']){
                         // console.log('content available');
-                        var content = entry.content[0]['_'];
-                        var markdown = tds.turndown(content);
+                        content = entry.content[0]['_'];
+                        markdown = tds.turndown(content);
                         // console.log(markdown);
 
-                        console.log("\n\n\n\n\n");
+                        
                     }
 
-                    const dest = fs.writeFile(fname, `---\ntitle: '${title}'\ndate: ${published}\ndraft: false\n---\n${markdown}`, function(err){
+                    var tagLabel = [];
+                    var tags = [];
+
+                    
+                    tagLabel = entry.category.filter(function (tag){
+                        // console.log(`tagged against :${tag['$'].term}`);
+                        return tag['$'].term && tag['$'].term.indexOf('http://schemas.google')==-1;
+                    });
+                    console.log(`No of category: ${entry.category.length}`);
+                    tagLabel.forEach(function(tag){
+                        console.log(`tagged against :${tag['$'].term}`);
+                        tags.push(tag['$'].term);
+                    });
+
+                    console.log(`tags : [${tags.join(', ')}]`);
+
+                    var tagString=''
+                    if(tags.length){
+                        tagString=`tags : [${tags.join(', ')}]\n`;
+                    }
+
+                    console.log("\n\n\n\n\n");
+
+                    const dest = fs.writeFile(fname, `---\ntitle: '${title}'\ndate: ${published}\ndraft: false\n${tagString}---\n${markdown}`, function(err){
                         if(err){
                             console.log(`Error while writing to ${fname} - ${err}`);
                             console.dir(err);
