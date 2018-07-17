@@ -68,7 +68,7 @@ fs.readFile(process.argv[2], function(err, data) {
             posts.forEach(function(entry){
                 var title = entry.title[0]['_'];
                 // title = tds.turndown(title);
-                title = title.replace(/"/g, '\\"');
+                title = title.replace(/'/g, "''");
                 // title = title.replace(/'/g, "\\'");
                 // title = title.replace(/:/g, "\\:");
                 // title = title.replace(/\[/g, '\\[');
@@ -99,12 +99,12 @@ fs.readFile(process.argv[2], function(err, data) {
                         // console.log('content available');
                         var content = entry.content[0]['_'];
                         var markdown = tds.turndown(content);
-                        console.log(markdown);
+                        // console.log(markdown);
 
                         console.log("\n\n\n\n\n");
                     }
 
-                    const dest = fs.writeFile(fname, `---\ntitle: ${title}\ndate: ${published}\ndraft: false\n---\n${markdown}`, function(err){
+                    const dest = fs.writeFile(fname, `---\ntitle: '${title}'\ndate: ${published}\ndraft: false\n---\n${markdown}`, function(err){
                         if(err){
                             console.log(`Error while writing to ${fname} - ${err}`);
                             console.dir(err);
