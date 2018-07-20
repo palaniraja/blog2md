@@ -10,7 +10,7 @@
     - [x] Parse Title, Link, Created, Updated, Content, Link
     - [ ] List Post & Respective comment counts
     - [x] Content to MD - pandoc?
-    - [ ] Parse Images, Files, Videos linked to the post
+    - [ ] Parse Images, Files, Videos linked to the posts
     - [x] Create output dir
     - [ ] List items that are not downloaded( or can't) along with their .md file for user to proceed
 
@@ -22,7 +22,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const xml2js = require('xml2js');
-const TurndownService = require('turndown')
+const TurndownService = require('turndown');
 
 var tds = new TurndownService()
 
@@ -104,17 +104,21 @@ function wordpressImport(backupXmlFile, outputDir){
 
                 var title = '';
                 var content = '';
-                var tags = '';
+                var tags = [];
                 var published = '';
                 var comments = [];
                 var fname = '';
                 var markdown = '';
                 var fileContent = '';
                 posts.forEach(function(post){
-                    title = post.title;
-                    if (title && title.indexOf("'")!=-1){
-                         title = title.replace(/'/g, "''");
-                    }
+                    
+                    title = post.title[0];
+                    // console.log(title);
+
+                    // if (title && title.indexOf("'")!=-1){
+                    title = title.replace(/'/g, "''");
+                    // }
+
                     published = post.pubDate;
                     comments = post['wp:comment'];
                     fname = post["wp:post_name"];
@@ -131,6 +135,22 @@ function wordpressImport(backupXmlFile, outputDir){
                         console.log(`comments: '${comments.length}'`);    
                     }
                     
+                    tags = [];
+
+                    var categories = post.category;
+                    var tagString = '';
+
+                    if (categories && categories.length){
+                        categories.forEach(function (category){
+                            // console.log(category['_']);
+                            tags.push(category['_']);
+                        });
+
+                        // console.log(tags.join(", "));
+                        // tags = tags.join(", ");
+                        tagString = 'tags: [' + tags.join(", ") + "]\n";
+                        // console.log(tagString);
+                    }
 
 
                     fname = outputDir+'/'+fname+'.md';
@@ -142,31 +162,12 @@ function wordpressImport(backupXmlFile, outputDir){
                         markdown = tds.turndown(content);
                         // console.log(markdown);
 
-                        fileContent = `---\ntitle: '${title}'\ndate: ${published}\ndraft: false\n---\n${markdown}`;
+                        fileContent = `---\ntitle: '${title}'\ndate: ${published}\ndraft: false\n${tagString}---\n${markdown}`;
 
                         writeToFile(fname, fileContent);
                         
                     }
                 });
-            // }
-            // catch (err){
-            //     console.log(`Error while parsing for contents ${JSON.stringify(err)}`);
-            // }
-            
-            
-
-            // console.log(`tags : [${tags.join(', ')}]`);
-
-            //             var tagString=''
-            //             if(tags.length){
-            //                 tagString=`tags : [${tags.join(', ')}]\n`;
-            //             }
-
-            //             console.log("\n\n\n\n\n");
-
-
-            //             fileContent = `---\ntitle: '${title}'\ndate: ${published}\ndraft: false\n${tagString}---\n${markdown}`;
-
 
         });
     });
@@ -242,7 +243,7 @@ function bloggerImport(backupXmlFile, outputDir){
                     // console.dir(urlLink[0]);
                     if (urlLink && urlLink[0] && urlLink[0]['$'] && urlLink[0]['$'].href){
                         url = urlLink[0]['$'].href;
-                        var fname = outputDir+'/'+path.path.basename(url);
+                        var fname = outputDir + '/' + path.basename(url);
                         fname = fname.replace('.html', '.md')
                         console.log(fname);
 
@@ -281,7 +282,7 @@ function bloggerImport(backupXmlFile, outputDir){
 
                         fileContent = `---\ntitle: '${title}'\ndate: ${published}\ndraft: false\n${tagString}---\n${markdown}`;
 
-                        writeToFile(fanme, fileContent)
+                        writeToFile(fname, fileContent)
 
                     }
                     
