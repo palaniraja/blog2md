@@ -211,6 +211,7 @@ function bloggerImport(backupXmlFile, outputDir){
                  var content = '';
                  var markdown = '';
                  var fileContent = '';
+                 var fileHeader = '';
                  var postMaps = {};
 
                 posts.forEach(function(entry){
@@ -246,7 +247,7 @@ function bloggerImport(backupXmlFile, outputDir){
                         console.log(fname);
                         postMap.fname = fname.replace('.md', '-comments.md');
                         postMap.comments = [];
-                        postMaps[postMap.pid] = postMap;
+
 
                         if (entry.content && entry.content[0] && entry.content[0]['_']){
                             // console.log('content available');
@@ -270,10 +271,12 @@ function bloggerImport(backupXmlFile, outputDir){
                             console.log(`tagged against :${tag['$'].term}`);
                             tags.push(tag['$'].term);
                         });
+                        
 
                         console.log(`tags : [${tags.join(', ')}]`);
 
-                        var tagString=''
+                        var tagString='';
+
                         if(tags.length){
                             tagString=`tags : [${tags.join(', ')}]\n`;
                         }
@@ -282,8 +285,11 @@ function bloggerImport(backupXmlFile, outputDir){
 
                         console.log("\n\n\n\n\n");
 
+                        fileHeader = `---\ntitle: '${title}'\ndate: ${published}\ndraft: false\n${tagString}---\n`;
+                        fileContent = `${fileHeader}\n${markdown}`;
 
-                        fileContent = `---\ntitle: '${title}'\ndate: ${published}\ndraft: false\n${tagString}---\n\n${markdown}`;
+                        postMap.header = fileHeader;
+                        postMaps[postMap.pid] = postMap;
 
                         // writeToFile(fname, fileContent)
 
@@ -339,7 +345,7 @@ function bloggerImport(backupXmlFile, outputDir){
                         ccontent += `#### ${comment.title}\n[${comment.author.name}](${comment.author.url} "${comment.author.email}") - ${comment.published}\n\n${comment.content}\n<hr />\n`;
                     });
 
-                    writeToFile(postMaps[pmap].fname, ccontent);
+                    writeToFile(postMaps[pmap].fname, `${postMaps[pmap].header}\n${ccontent}`);
                 }
             }
 
