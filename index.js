@@ -110,9 +110,12 @@ function wordpressImport(backupXmlFile, outputDir){
                 var fname = '';
                 var markdown = '';
                 var fileContent = '';
+                var fileHeader = '';
+                var postMaps = {};
                 
                 posts.forEach(function(post){
-                    
+                    var postMap = {};
+
                     title = post.title[0];
                     
                     // console.log(title);
@@ -154,6 +157,8 @@ function wordpressImport(backupXmlFile, outputDir){
                         // console.log(tagString);
                     }
 
+                    var pmap = {fname:'', comments:[]};
+                    pmap.fname = outputDir+'/'+fname+'-comments.md';
 
                     fname = outputDir+'/'+fname+'.md';
                     console.log(`fname: '${fname}'`);
@@ -164,11 +169,57 @@ function wordpressImport(backupXmlFile, outputDir){
                         markdown = tds.turndown(content);
                         // console.log(markdown);
 
-                        fileContent = `---\ntitle: '${title}'\ndate: ${published}\ndraft: false\n${tagString}---\n\n${markdown}`;
+                        fileHeader = `---\ntitle: '${title}'\ndate: ${published}\ndraft: false\n${tagString}---\n`;
+                        fileContent = `${fileHeader}\n${markdown}`;
 
-                        writeToFile(fname, fileContent);
+                        // fileContent = `---\ntitle: '${title}'\ndate: ${published}\ndraft: false\n${tagString}---\n\n${markdown}`;
+
+                        // writeToFile(fname, fileContent);
                         
                     }
+
+                    //comments:
+                    /*
+                        "wp:comment" [.each]
+                            wp:comment_author[0]
+                            wp:comment_author_email[0]
+                            wp:comment_author_url[0]
+                            wp:comment_date[0]
+                            wp:comment_content[0]
+                            wp:comment_approved[0] == 1
+                        wp:post_id
+
+                    */
+                    var comments = post["wp:comment"] || [];
+                    console.dir(comments);
+                    var anyApprovedComments = 0;
+                    var ccontent = `${fileHeader}\n`;
+                    comments.forEach(function(comment){
+                        // console.log('')
+                        if(comment["wp:comment_approved"].pop()){
+                            anyApprovedComments = 1;
+
+                            var cmt = {published:'', content:'', author:{}};
+
+                            cmt.published = (comment["wp:comment_date"]?comment["wp:comment_date"].pop():'');
+
+                            var cont = '<div>'+comment["wp:comment_date"].pop()+'</div>';
+                            cmt.content = (comment["wp:comment_content"]?tds.turndown(cont):'');
+
+                            cmt.author.name = (comment["wp:comment_author"]?comment["wp:comment_author"].pop():'');
+                            cmt.author.email = (comment["wp:comment_author_email"]?comment["wp:comment_author_email"].pop():'');
+                            cmt.author.url = (comment["wp:comment_author_url"]?comment["wp:comment_author_url"].pop():'');
+
+                            ccontent += `#### [${cmt.author.name}](${cmt.author.url} "${cmt.author.email}") - ${cmt.published}\n\n${cmt.content}\n<hr />\n`;
+
+                            pmap.comments.push(cmt);
+                        }
+                    });
+
+                    //just a hack to re-use blogger writecomments method
+                    writeComments({"0": pmap});
+
+
                 });
 
         });
@@ -334,20 +385,8 @@ function bloggerImport(backupXmlFile, outputDir){
 
             // console.log(JSON.stringify(postMaps)); return;
            
-            for (var pmap in postMaps){
-                var comments = postMaps[pmap].comments;
-                console.log(`post id: ${pmap} has ${comments.length} comments`);
-                // console.dir(comments);
-
-                if (comments.length){
-                    var ccontent = '';
-                    comments.forEach(function(comment){
-                        ccontent += `#### ${comment.title}\n[${comment.author.name}](${comment.author.url} "${comment.author.email}") - ${comment.published}\n\n${comment.content}\n<hr />\n`;
-                    });
-
-                    writeToFile(postMaps[pmap].fname, `${postMaps[pmap].header}\n${ccontent}`);
-                }
-            }
+            writeComments(postMaps);
+            
 
 
             }
@@ -355,6 +394,24 @@ function bloggerImport(backupXmlFile, outputDir){
         });
 });
 
+}
+
+
+function writeComments(postMaps){
+    for (var pmap in postMaps){
+        var comments = postMaps[pmap].comments;
+        console.log(`post id: ${pmap} has ${comments.length} comments`);
+        // console.dir(comments);
+
+        if (comments.length){
+            var ccontent = '';
+            comments.forEach(function(comment){
+                ccontent += `#### ${comment.title}\n[${comment.author.name}](${comment.author.url} "${comment.author.email}") - ${comment.published}\n\n${comment.content}\n<hr />\n`;
+            });
+
+            writeToFile(postMaps[pmap].fname, `${postMaps[pmap].header}\n${ccontent}`);
+        }
+    }
 }
 
 
