@@ -171,6 +171,7 @@ function wordpressImport(backupXmlFile, outputDir){
 
                         fileHeader = `---\ntitle: '${title}'\ndate: ${published}\ndraft: false\n${tagString}---\n`;
                         fileContent = `${fileHeader}\n${markdown}`;
+                        pmap.header = `${fileHeader}\n`;
 
                         // fileContent = `---\ntitle: '${title}'\ndate: ${published}\ndraft: false\n${tagString}---\n\n${markdown}`;
 
@@ -193,17 +194,17 @@ function wordpressImport(backupXmlFile, outputDir){
                     var comments = post["wp:comment"] || [];
                     console.dir(comments);
                     var anyApprovedComments = 0;
-                    var ccontent = `${fileHeader}\n`;
+                    var ccontent = '';
                     comments.forEach(function(comment){
                         // console.log('')
                         if(comment["wp:comment_approved"].pop()){
                             anyApprovedComments = 1;
 
-                            var cmt = {published:'', content:'', author:{}};
+                            var cmt = {title:'', published:'', content:'', author:{}};
 
                             cmt.published = (comment["wp:comment_date"]?comment["wp:comment_date"].pop():'');
 
-                            var cont = '<div>'+comment["wp:comment_date"].pop()+'</div>';
+                            var cont = '<div>'+comment["wp:comment_content"].pop()+'</div>';
                             cmt.content = (comment["wp:comment_content"]?tds.turndown(cont):'');
 
                             cmt.author.name = (comment["wp:comment_author"]?comment["wp:comment_author"].pop():'');
