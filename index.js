@@ -1,19 +1,7 @@
 'use strict';
 
 /***
-    Usage: blogger2md <BLOGGER BACKUP XML> <OUTPUT DIR>
-
-    Script to convert posts from Blogger to Markdown.
-
-    - [x] Read XML
-    - [ ] Parse Entries (Posts and comments) (with xpath?)
-    - [x] Parse Title, Link, Created, Updated, Content, Link
-    - [ ] List Post & Respective comment counts
-    - [x] Content to MD - pandoc?
-    - [-] Parse Images, Files, Videos linked to the posts
-    - [x] Create output dir
-    - [-] List items that are not downloaded( or can't) along with their .md file for user to proceed
-
+    Usage: blog2md b|w <BLOGGER/Wordpress BACKUP XML> <OUTPUT DIR>
 
 */
 
@@ -30,7 +18,7 @@ var tds = new TurndownService()
 
 if (process.argv.length < 5){
     // ${process.argv[1]}
-    console.log(`Usage: blogger2md [b|w] <BACKUP XML> <OUTPUT DIR>`)
+    console.log(`Usage: blog2md [b|w] <BACKUP XML> <OUTPUT DIR>`)
     console.log(`\t b for parsing Blogger(Blogspot) backup`);
     console.log(`\t w for parsing Wordpress backup`);
     return 1;
