@@ -3,7 +3,7 @@
  Convert Blogger & Wordpress backup blog posts to hugo compatible markdown documents 
 
 
-    Usage: blog2md <BLOGGER BACKUP XML> <OUTPUT DIR>
+    Usage: blog2md b|w <BLOGGER BACKUP XML> <OUTPUT DIR>
 
 
 Script to convert posts from Blogger to Markdown.
