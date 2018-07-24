@@ -163,7 +163,7 @@ function wordpressImport(backupXmlFile, outputDir){
 
                         // fileContent = `---\ntitle: '${title}'\ndate: ${published}\ndraft: false\n${tagString}---\n\n${markdown}`;
 
-                        // writeToFile(fname, fileContent);
+                        writeToFile(fname, fileContent);
                         
                     }
 
@@ -331,7 +331,7 @@ function bloggerImport(backupXmlFile, outputDir){
                         postMap.header = fileHeader;
                         postMaps[postMap.pid] = postMap;
 
-                        // writeToFile(fname, fileContent)
+                        writeToFile(fname, fileContent)
 
                     }
                     
