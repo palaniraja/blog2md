@@ -3,7 +3,26 @@
  Convert Blogger & Wordpress backup blog posts to hugo compatible markdown documents 
 
 
-    Usage: blog2md b|w <BLOGGER BACKUP XML> <OUTPUT DIR>
+    Usage: node index.js b|w <BLOGGER BACKUP XML> <OUTPUT DIR>
+
+For Blogger imports, blog posts and comments (as seperate file `<postname>-comments.md`) will be created in "`out`" directory
+
+```
+    node index.js b your-blogger-backup-export.xml out
+```
+
+For Wordpress imports, blog posts and comments (as seperate file `<postname>-comments.md`) will be created in "`out`" directory
+
+```
+    node index.js w your-wordpress-backup-export.xml out
+```
+
+## Installation
+
+* Download/Clone this project
+* `cd` to directory
+* Run `npm install` to install dependencies
+* Run `node index.js <arg...>`
 
 
 Script to convert posts from Blogger to Markdown.
