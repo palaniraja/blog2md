@@ -9,6 +9,7 @@
   "author": "palaniraja",
   "license": "ISC",
   "dependencies": {
+    "moment": "^2.22.2",
     "turndown": "^4.0.2",
     "xml2js": "^0.4.19"
   }
