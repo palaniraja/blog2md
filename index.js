@@ -1,7 +1,7 @@
 'use strict';
 
 /***
-    Usage: blog2md b|w <BLOGGER/Wordpress BACKUP XML> <OUTPUT DIR>
+    Usage: blog2md b|w <BLOGGER/WordPress BACKUP XML> <OUTPUT DIR>
 
 */
 
@@ -11,6 +11,7 @@ const os = require('os');
 const path = require('path');
 const xml2js = require('xml2js');
 const TurndownService = require('turndown');
+var moment = require('moment');
 
 var tds = new TurndownService()
 
@@ -20,7 +21,7 @@ if (process.argv.length < 5){
     // ${process.argv[1]}
     console.log(`Usage: blog2md [b|w] <BACKUP XML> <OUTPUT DIR>`)
     console.log(`\t b for parsing Blogger(Blogspot) backup`);
-    console.log(`\t w for parsing Wordpress backup`);
+    console.log(`\t w for parsing WordPress backup`);
     return 1;
 }
 
@@ -37,14 +38,6 @@ else{
 }
 
 
-if (fs.existsSync(outputDir+'/assets')) {
-    console.log(`WARNING: assets directory "${outputDir+'/assets'}" already exists. Files will be overwritten.`)
-}
-else{
-    fs.mkdirSync(outputDir+'/assets');
-}
-
-
 if( option.toLowerCase() == 'b'){
     bloggerImport(inputFile, outputDir);
 }
@@ -52,7 +45,7 @@ else if(option.toLowerCase() == 'w'){
     wordpressImport(inputFile, outputDir);
 }
 else {
-    console.log('Only b (Blogger) and w (Wordpress) are valid options');
+    console.log('Only b (Blogger) and w (WordPress) are valid options');
     return;
 }
 
@@ -395,7 +388,9 @@ function writeComments(postMaps){
         if (comments.length){
             var ccontent = '';
             comments.forEach(function(comment){
-                ccontent += `#### ${comment.title}\n[${comment.author.name}](${comment.author.url} "${comment.author.email}") - ${comment.published}\n\n${comment.content}\n<hr />\n`;
+                var readableDate = '<time datetime="'+comment.published+'">' + moment(comment.published).format("MMM d, YYYY") + '</time>';
+
+                ccontent += `#### ${comment.title}\n[${comment.author.name}](${comment.author.url} "${comment.author.email}") - ${readableDate}\n\n${comment.content}\n<hr />\n`;
             });
 
             writeToFile(postMaps[pmap].fname, `${postMaps[pmap].header}\n${ccontent}`);
