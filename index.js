@@ -188,7 +188,7 @@ function wordpressImport(backupXmlFile, outputDir){
 
                     */
                     var comments = post["wp:comment"] || [];
-                    console.dir(comments);
+                    // console.dir(comments);
                     var anyApprovedComments = 0;
                     var ccontent = '';
                     comments.forEach(function(comment){
@@ -214,8 +214,9 @@ function wordpressImport(backupXmlFile, outputDir){
                     });
 
                     //just a hack to re-use blogger writecomments method
-                    writeComments({"0": pmap});
-
+                    if (pmap && pmap.length){
+                        writeComments({"0": pmap});    
+                    }
 
                 });
 
@@ -317,7 +318,7 @@ function bloggerImport(backupXmlFile, outputDir){
                         });
                         console.log(`No of category: ${entry.category.length}`);
                         tagLabel.forEach(function(tag){
-                            console.log(`tagged against :${tag['$'].term}`);
+                            // console.log(`tagged against :${tag['$'].term}`);
                             tags.push(tag['$'].term);
                         });
                         
@@ -382,11 +383,8 @@ function bloggerImport(backupXmlFile, outputDir){
             });
 
             // console.log(JSON.stringify(postMaps)); return;
-           
             writeComments(postMaps);
-            
-
-
+           
             }
             console.log('Done');
         });
@@ -431,26 +429,25 @@ function writeToFile(filename, content, append=false){
 
     if(append){
         console.log(`DEBUG: going to append to ${filename}`);
-        const dest = fs.appendFile(filename, content, function(err){
-                            if(err){
-                                console.log(`Error while appending to ${filename} - ${JSON.stringify(err)}`);
-                                console.dir(err);
-                            }
-                            else{
-                                console.log(`Successfully appended to ${filename}`);
-                            }
-                        });
+        try{
+            fs.appendFileSync(filename, content);
+            console.log(`Successfully appended to ${filename}`);
+        }
+        catch(err){
+            console.log(`Error while appending to ${filename} - ${JSON.stringify(err)}`);
+            console.dir(err);
+        }
+
     }else{
         console.log(`DEBUG: going to write to ${filename}`);
-        const dest = fs.writeFile(filename, content, function(err){
-                            if(err){
-                                console.log(`Error while writing to ${filename} - ${JSON.stringify(err)}`);
-                                console.dir(err);
-                            }
-                            else{
-                                console.log(`Successfully written to ${filename}`);
-                            }
-                        });
+        try{
+            fs.writeFileSync(filename, content);
+            console.log(`Successfully written to ${filename}`);
+        }
+        catch(err){
+            console.log(`Error while writing to ${filename} - ${JSON.stringify(err)}`);
+            console.dir(err);
+        }
     }
     
 }

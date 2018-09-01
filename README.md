@@ -17,6 +17,13 @@ For WordPress imports, blog posts and comments (as seperate file `<postname>-com
     node index.js w your-wordpress-backup-export.xml out
 ```
 
+if you want the comments to be merged in your post file itself. you can use flag `m` at the end. Defaults to `s` for seperate comments file
+
+```
+    node index.js w your-wordpress-backup-export.xml out m
+```
+
+
 ## Installation (usual node project)
 
 * Download or Clone this project
