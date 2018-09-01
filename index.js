@@ -19,7 +19,7 @@ var tds = new TurndownService()
 
 if (process.argv.length < 5){
     // ${process.argv[1]}
-    console.log(`Usage: blog2md [b|w] <BACKUP XML> <OUTPUT DIR>`)
+    console.log(`Usage: blog2md [b|w] <BACKUP XML> <OUTPUT DIR> m|s`)
     console.log(`\t b for parsing Blogger(Blogspot) backup`);
     console.log(`\t w for parsing WordPress backup`);
     return 1;
@@ -30,12 +30,25 @@ var inputFile =  process.argv[3];
 
 var outputDir = process.argv[4];
 
+var mergeComments = (process.argv[5] == 'm')?'m':'s' ;
+
+
+
 if (fs.existsSync(outputDir)) {
     console.log(`WARNING: Given output directory "${outputDir}" already exists. Files will be overwritten.`)
 }
 else{
     fs.mkdirSync(outputDir);
 }
+
+
+if (mergeComments == 'm'){
+    console.log(`INFO: Comments requested to be merged along with posts. (m)`);
+}
+else{
+    console.log(`INFO: Comments requested to be a seperate .md file(m - default)`);
+}
+
 
 
 if( option.toLowerCase() == 'b'){
@@ -48,6 +61,7 @@ else {
     console.log('Only b (Blogger) and w (WordPress) are valid options');
     return;
 }
+
 
 
 
@@ -278,6 +292,7 @@ function bloggerImport(backupXmlFile, outputDir){
                         var fname = outputDir + '/' + path.basename(url);
                         fname = fname.replace('.html', '.md')
                         console.log(fname);
+                        postMap.postName = fname
                         postMap.fname = fname.replace('.md', '-comments.md');
                         postMap.comments = [];
 
@@ -380,6 +395,12 @@ function bloggerImport(backupXmlFile, outputDir){
 
 
 function writeComments(postMaps){
+
+    if (mergeComments == 'm'){
+        console.log('DEBUG: merge comments requested');
+    }else{
+        console.log('DEBUG: seperate comments requested (defaulted)');
+    }
     for (var pmap in postMaps){
         var comments = postMaps[pmap].comments;
         console.log(`post id: ${pmap} has ${comments.length} comments`);
@@ -393,15 +414,34 @@ function writeComments(postMaps){
                 ccontent += `#### ${comment.title}\n[${comment.author.name}](${comment.author.url} "${comment.author.email}") - ${readableDate}\n\n${comment.content}\n<hr />\n`;
             });
 
-            writeToFile(postMaps[pmap].fname, `${postMaps[pmap].header}\n${ccontent}`);
+            if (mergeComments == 'm'){
+                writeToFile(postMaps[pmap].postName, `\n---\n###Comments:\n${ccontent}`, true);
+            }else{
+                writeToFile(postMaps[pmap].fname, `${postMaps[pmap].header}\n${ccontent}`);
+            }
+            
         }
     }
 }
 
 
 
-function writeToFile(filename, content){
-    const dest = fs.writeFile(filename, content, function(err){
+function writeToFile(filename, content, append=false){
+
+    if(append){
+        console.log(`DEBUG: going to append to ${filename}`);
+        const dest = fs.appendFile(filename, content, function(err){
+                            if(err){
+                                console.log(`Error while appending to ${filename} - ${JSON.stringify(err)}`);
+                                console.dir(err);
+                            }
+                            else{
+                                console.log(`Successfully appended to ${filename}`);
+                            }
+                        });
+    }else{
+        console.log(`DEBUG: going to write to ${filename}`);
+        const dest = fs.writeFile(filename, content, function(err){
                             if(err){
                                 console.log(`Error while writing to ${filename} - ${JSON.stringify(err)}`);
                                 console.dir(err);
@@ -410,4 +450,6 @@ function writeToFile(filename, content){
                                 console.log(`Successfully written to ${filename}`);
                             }
                         });
+    }
+    
 }
