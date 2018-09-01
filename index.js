@@ -156,6 +156,7 @@ function wordpressImport(backupXmlFile, outputDir){
                     pmap.fname = outputDir+'/'+fname+'-comments.md';
 
                     fname = outputDir+'/'+fname+'.md';
+                    pmap.postName = fname;
                     console.log(`fname: '${fname}'`);
                     
                     if (post["content:encoded"]){
@@ -415,7 +416,7 @@ function writeComments(postMaps){
             });
 
             if (mergeComments == 'm'){
-                writeToFile(postMaps[pmap].postName, `\n---\n###Comments:\n${ccontent}`, true);
+                writeToFile(postMaps[pmap].postName, `\n---\n### Comments:\n${ccontent}`, true);
             }else{
                 writeToFile(postMaps[pmap].fname, `${postMaps[pmap].header}\n${ccontent}`);
             }
