@@ -46,7 +46,7 @@ if (mergeComments == 'm'){
     console.log(`INFO: Comments requested to be merged along with posts. (m)`);
 }
 else{
-    console.log(`INFO: Comments requested to be a seperate .md file(m - default)`);
+    console.log(`INFO: Comments requested to be a separate .md file(m - default)`);
 }
 
 
@@ -398,7 +398,7 @@ function writeComments(postMaps){
     if (mergeComments == 'm'){
         console.log('DEBUG: merge comments requested');
     }else{
-        console.log('DEBUG: seperate comments requested (defaulted)');
+        console.log('DEBUG: separate comments requested (defaulted)');
     }
     for (var pmap in postMaps){
         var comments = postMaps[pmap].comments;
