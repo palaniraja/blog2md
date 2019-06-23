@@ -214,8 +214,8 @@ function wordpressImport(backupXmlFile, outputDir){
                     });
 
                     //just a hack to re-use blogger writecomments method
-                    if (pmap && pmap.length){
-                        writeComments({"0": pmap});    
+                    if (pmap && pmap.comments && pmap.comments.length){
+                        writeComments({"0": pmap});
                     }
 
                 });
