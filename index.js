@@ -128,7 +128,7 @@ function wordpressImport(backupXmlFile, outputDir){
 
                     published = post.pubDate;
                     comments = post['wp:comment'];
-                    fname = post["wp:post_name"];
+                    fname = post["wp:post_name"][0] || post["wp:post_id"];
                     markdown = '';
                     // if (post.guid && post.guid[0] && post.guid[0]['_']){
                     //     fname = path.basename(post.guid[0]['_']);
