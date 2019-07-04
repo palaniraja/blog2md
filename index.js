@@ -13,7 +13,14 @@ const xml2js = require('xml2js');
 const TurndownService = require('turndown');
 var moment = require('moment');
 
-var tds = new TurndownService()
+var tds = new TurndownService({ codeBlockStyle: 'fenced', fence: '```' })
+
+tds.addRule('wppreblock', {
+    filter: ['pre'],
+    replacement: function(content) {
+        return '```\n' + content + '\n```'
+    }
+})
 
 // console.log(`No. of arguments passed: ${process.argv.length}`);
 
@@ -111,7 +118,7 @@ function wordpressImport(backupXmlFile, outputDir){
                 posts.forEach(function(post){
                     var postMap = {};
 
-                    title = post.title[0];
+                    title = post.title[0].trim();
                     
                     // console.log(title);
 
