@@ -13,7 +13,14 @@ const xml2js = require('xml2js');
 const TurndownService = require('turndown');
 var moment = require('moment');
 
-var tds = new TurndownService()
+var tds = new TurndownService({ codeBlockStyle: 'fenced', fence: '```' })
+
+tds.addRule('wppreblock', {
+    filter: ['pre'],
+    replacement: function(content) {
+        return '```\n' + content + '\n```'
+    }
+})
 
 // console.log(`No. of arguments passed: ${process.argv.length}`);
 
@@ -111,7 +118,7 @@ function wordpressImport(backupXmlFile, outputDir){
                 posts.forEach(function(post){
                     var postMap = {};
 
-                    title = post.title[0];
+                    title = post.title[0].trim();
                     
                     // console.log(title);
 
@@ -121,7 +128,7 @@ function wordpressImport(backupXmlFile, outputDir){
 
                     published = post.pubDate;
                     comments = post['wp:comment'];
-                    fname = post["wp:post_name"];
+                    fname = post["wp:post_name"][0] || post["wp:post_id"];
                     markdown = '';
                     // if (post.guid && post.guid[0] && post.guid[0]['_']){
                     //     fname = path.basename(post.guid[0]['_']);
