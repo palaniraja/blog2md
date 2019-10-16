@@ -155,7 +155,7 @@ function wordpressImport(backupXmlFile, outputDir){
 
                         // console.log(tags.join(", "));
                         // tags = tags.join(", ");
-                        tagString = 'tags: [' + tags.join(", ") + "]\n";
+                        tagString = 'tags: [\'' + tags.join("', '") + "']\n";
                         // console.log(tagString);
                     }
 
