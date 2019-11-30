@@ -107,6 +107,7 @@ function wordpressImport(backupXmlFile, outputDir){
                 var title = '';
                 var content = '';
                 var tags = [];
+                var draft = false;
                 var published = '';
                 var comments = [];
                 var fname = '';
@@ -126,6 +127,7 @@ function wordpressImport(backupXmlFile, outputDir){
                     title = title.replace(/'/g, "''");
                     // }
 
+                    draft = post["wp:status"] == "draft"
                     published = post.pubDate;
                     comments = post['wp:comment'];
                     fname = post["wp:post_name"][0] || post["wp:post_id"];
@@ -172,11 +174,9 @@ function wordpressImport(backupXmlFile, outputDir){
                         markdown = tds.turndown(content);
                         // console.log(markdown);
 
-                        fileHeader = `---\ntitle: '${title}'\ndate: ${published}\ndraft: false\n${tagString}---\n`;
+                        fileHeader = `---\ntitle: '${title}'\ndate: ${published}\ndraft: ${draft}\n${tagString}---\n`;
                         fileContent = `${fileHeader}\n${markdown}`;
                         pmap.header = `${fileHeader}\n`;
-
-                        // fileContent = `---\ntitle: '${title}'\ndate: ${published}\ndraft: false\n${tagString}---\n\n${markdown}`;
 
                         writeToFile(fname, fileContent);
                         
