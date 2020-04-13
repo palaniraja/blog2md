@@ -23,6 +23,11 @@ If you want the comments to be merged in your post file itself. you can use flag
     node index.js w your-wordpress-backup-export.xml out m
 ```
 
+If you want to drop the comments and not write them to to new files at all, you can use flag `d` at the end.
+
+```
+    node index.js w your-wordpress-backup-export.xml out d
+```
 
 ## Installation (usual node project)
 
