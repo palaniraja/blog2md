@@ -53,7 +53,7 @@ if (mergeComments == 'm'){
     console.log(`INFO: Comments requested to be merged along with posts. (m)`);
 }
 else{
-    console.log(`INFO: Comments requested to be a separate .md file(m - default)`);
+    console.log(`INFO: Comments requested to be a separate .md file. (s - default)`);
 }
 
 
