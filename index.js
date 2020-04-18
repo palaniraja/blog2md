@@ -18,7 +18,7 @@ var tds = new TurndownService({ codeBlockStyle: 'fenced', fence: '```' })
 tds.addRule('wppreblock', {
     filter: ['pre'],
     replacement: function(content) {
-        return '```\n' + content + '\n```'
+        return '\n```' + content + '```\n'
     }
 })
 
@@ -26,9 +26,12 @@ tds.addRule('wppreblock', {
 
 if (process.argv.length < 5){
     // ${process.argv[1]}
-    console.log(`Usage: blog2md [b|w] <BACKUP XML> <OUTPUT DIR> m|s`)
+    console.log(`Usage: blog2md [b|w] <BACKUP XML> <OUTPUT DIR> [m|s [t]]`)
     console.log(`\t b for parsing Blogger(Blogspot) backup`);
     console.log(`\t w for parsing WordPress backup`);
+    console.log(`\t m (optional) to merge comments into posts`);
+    console.log(`\t s (optional) to use separate files for comments. Note: s is the default option!`);
+    console.log(`\t t (optional) specify to save title in comments (usually title is just a few words from comment body)`);
     return 1;
 }
 
@@ -39,6 +42,7 @@ var outputDir = process.argv[4];
 
 var mergeComments = (process.argv[5] == 'm')?'m':'s' ;
 
+var saveCommentsTitle = process.argv[6] && process.argv[6] == 't';
 
 
 if (fs.existsSync(outputDir)) {
@@ -417,13 +421,15 @@ function writeComments(postMaps){
         if (comments.length){
             var ccontent = '';
             comments.forEach(function(comment){
-                var readableDate = '<time datetime="'+comment.published+'">' + moment(comment.published).format("MMM d, YYYY") + '</time>';
+                var readableDate = `${comment.published}`;
 
-                ccontent += `#### ${comment.title}\n[${comment.author.name}](${comment.author.url} "${comment.author.email}") - ${readableDate}\n\n${comment.content}\n<hr />\n`;
+                ccontent += `#### [${comment.author.name}](${comment.author.url}) (${comment.author.email}) at ${readableDate}\n\n`;
+                if (saveCommentsTitle) ccontent += `##### ${comment.title}\n\n`;
+                ccontent += `${comment.content}\n\n---\n\n`;
             });
 
             if (mergeComments == 'm'){
-                writeToFile(postMaps[pmap].postName, `\n---\n### Comments:\n${ccontent}`, true);
+                writeToFile(postMaps[pmap].postName, `\n\n---\n\n### Comments:\n\n${ccontent}`, true);
             }else{
                 writeToFile(postMaps[pmap].fname, `${postMaps[pmap].header}\n${ccontent}`);
             }
