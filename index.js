@@ -37,7 +37,8 @@ var inputFile =  process.argv[3];
 
 var outputDir = process.argv[4];
 
-var mergeComments = (process.argv[5] == 'm')?'m':'s' ;
+var mergeComments = 's';
+var mergeComments = process.argv[5];
 
 
 
@@ -51,9 +52,11 @@ else{
 
 if (mergeComments == 'm'){
     console.log(`INFO: Comments requested to be merged along with posts. (m)`);
+}else if (mergeComments == 'd'){
+    console.log(`INFO: Comments requested to be dropped and excluded from process. (d)`);
 }
 else{
-    console.log(`INFO: Comments requested to be a separate .md file(m - default)`);
+    console.log(`INFO: Comments requested to be a separate .md file. (s - default)`);
 }
 
 
@@ -403,9 +406,11 @@ function bloggerImport(backupXmlFile, outputDir){
 
 
 function writeComments(postMaps){
-
     if (mergeComments == 'm'){
         console.log('DEBUG: merge comments requested');
+    }else if (mergeComments == 'd') {
+        console.log('DEBUG: drop comments requested');
+        return;
     }else{
         console.log('DEBUG: separate comments requested (defaulted)');
     }
