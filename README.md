@@ -47,7 +47,7 @@ Script to convert posts from Blogger to Markdown.
 
 ## Reasons
 
-* Wrote this to consilidate and convert my blogs under one roof.
+* Wrote this to consolidate and convert my blogs under one roof.
 * Plain simple workflow with `hugo` 
 * Ideas was to download associated assets (images/files) linked to post. Gave up, because it was time consuming and anyhow I need to validate the markdown with assets of converted. And I don't see benefit.
 * Initial assumption was to parse with `xpath` but I found `xml2json.js` was easier
