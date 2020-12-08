@@ -26,7 +26,7 @@ node index.js w your-wordpress-backup-export.xml out m
 If converting from WordPress, and you have posts that do not contain HTML, you can use a `paragraph-fix` flag at the end.
 
 ```
-node index.js w your-wordpress-backup-export.xml out m
+node index.js w your-wordpress-backup-export.xml out m paragraph-fix
 ```
 
 ## Installation (usual node project)
