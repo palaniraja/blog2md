@@ -171,7 +171,7 @@ function wordpressImport(backupXmlFile, outputDir){
                     
                     if (post["content:encoded"]){
                         // console.log('content available');
-                        var postContent = post["content:encoded"];
+                        var postContent = post["content:encoded"].toString();
                         if (applyParagraphFix && !/<p>/i.test(postContent)) {
                             postContent = '<p>' + postContent.replace(/(\r?\n){2}/g, '</p>\n\n<p>') + '</p>';
                         }
