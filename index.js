@@ -38,7 +38,8 @@ var inputFile =  process.argv[3];
 var outputDir = process.argv[4];
 
 var mergeComments = (process.argv[5] == 'm')?'m':'s' ;
-
+/** Apply a fix to WordPress posts to convert newlines to paragraphs. */
+var applyParagraphFix = (process.argv.indexOf('paragraph-fix') >= 0);
 
 
 if (fs.existsSync(outputDir)) {
@@ -170,7 +171,11 @@ function wordpressImport(backupXmlFile, outputDir){
                     
                     if (post["content:encoded"]){
                         // console.log('content available');
-                        content = '<div>'+post["content:encoded"]+'</div>'; //to resolve error if plain text returned
+                        var postContent = post["content:encoded"];
+                        if (applyParagraphFix && !/<p>/i.test(postContent)) {
+                            postContent = '<p>' + postContent.replace(/(\r?\n){2}/g, '</p>\n\n<p>') + '</p>';
+                        }
+                        content = '<div>'+postContent+'</div>'; //to resolve error if plain text returned
                         markdown = tds.turndown(content);
                         // console.log(markdown);
 
