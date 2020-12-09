@@ -8,21 +8,26 @@
 For Blogger imports, blog posts and comments (as seperate file `<postname>-comments.md`) will be created in "`out`" directory
 
 ```
-    node index.js b your-blogger-backup-export.xml out
+node index.js b your-blogger-backup-export.xml out
 ```
 
 For WordPress imports, blog posts and comments (as seperate file `<postname>-comments.md`) will be created in "`out`" directory
 
 ```
-    node index.js w your-wordpress-backup-export.xml out
+node index.js w your-wordpress-backup-export.xml out
 ```
 
 If you want the comments to be merged in your post file itself. you can use flag `m` at the end. Defaults to `s` for seperate comments file
 
 ```
-    node index.js w your-wordpress-backup-export.xml out m
+node index.js w your-wordpress-backup-export.xml out m
 ```
 
+If converting from WordPress, and you have posts that do not contain HTML, you can use a `paragraph-fix` flag at the end.
+
+```
+node index.js w your-wordpress-backup-export.xml out m paragraph-fix
+```
 
 ## Installation (usual node project)
 
