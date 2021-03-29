@@ -335,12 +335,12 @@ function bloggerImport(backupXmlFile, outputDir){
                         });
                         
 
-                        console.log(`tags : [${tags.join(', ')}]`);
+                        console.log(`tags: \n${tags.map(a=> '- '+a).join('\n')}\n`);
 
                         var tagString='';
 
                         if(tags.length){
-                            tagString=`tags : [${tags.join(', ')}]\n`;
+                            tagString=`tags: \n${tags.map(a=> '- '+a).join('\n')}\n`;
                         }
 
                         console.dir(postMap);
@@ -349,7 +349,7 @@ function bloggerImport(backupXmlFile, outputDir){
 
                         var alias = url.replace(/^.*\/\/[^\/]+/, '');
 
-                        fileHeader = `---\ntitle: '${title}'\ndate: ${published}\ndraft: false\naliases: [ "${alias}" ]\n${tagString}---\n`;
+                        fileHeader = `---\ntitle: '${title}'\ndate: ${published}\ndraft: false\nurl: ${alias}\n${tagString}---\n`;
                         fileContent = `${fileHeader}\n${markdown}`;
 
                         postMap.header = fileHeader;
