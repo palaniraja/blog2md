@@ -10,6 +10,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const xml2js = require('xml2js');
+const sanitize = require('sanitize-filename');
 const TurndownService = require('turndown');
 var moment = require('moment');
 
@@ -131,7 +132,7 @@ function wordpressImport(backupXmlFile, outputDir){
                     draft = post["wp:status"] == "draft"
                     published = post.pubDate;
                     comments = post['wp:comment'];
-                    fname = post["wp:post_name"][0] || post["wp:post_id"];
+                    fname = sanitize(decodeURI(post["wp:post_name"][0])) || post["wp:post_id"];
                     markdown = '';
                     // if (post.guid && post.guid[0] && post.guid[0]['_']){
                     //     fname = path.basename(post.guid[0]['_']);
