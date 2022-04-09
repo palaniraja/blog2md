@@ -13,7 +13,7 @@
   "author": "palaniraja",
   "license": "ISC",
   "dependencies": {
-    "moment": "^2.22.2",
+    "moment": "^2.29.2",
     "sanitize-filename": "^1.6.3",
     "turndown": "^5.0.1",
     "xml2js": "^0.4.19"
