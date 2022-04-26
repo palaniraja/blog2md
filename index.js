@@ -241,7 +241,14 @@ function wordpressImport(backupXmlFile, outputDir){
 
 
 
-
+function getFileName(text) {
+    var newFileName = sanitize(text)     // first remove any dodgy characters
+            .replace(/[\.']/g, '')       // then remove some known characters
+            .replace(/[^a-z0-9]/gi, '-') // then turn anything that isn't a number or letter into a hyphen
+            .replace(/[\-]{2,}/g, '-')   // then turn multiple hyphens into a single one
+            .toLowerCase();              // finally make it all lower case
+    return newFileName;
+}
  
 function bloggerImport(backupXmlFile, outputDir){
     var parser = new xml2js.Parser();
@@ -288,12 +295,15 @@ function bloggerImport(backupXmlFile, outputDir){
 
                     var published = entry.published;
                     var draft = 'false';
+                    if(entry['app:control'] && (entry['app:control'][0]['app:draft'][0] == 'yes')){
+                        draft =  'true';
+                    }
 
                     console.log(`title: "${title}"`);
                     console.log(`date: ${published}`);
-                    console.log(`draft: false`);
+                    console.log(`draft: ${draft}`);
                     
-                    var links = entry.link;
+                    var sanitizedTitle = getFileName(title)
 
                     var urlLink = entry.link.filter(function(link){
                         return link["$"].type && link["$"].rel && link["$"].rel=='alternate' && link["$"].type=='text/html'
@@ -304,61 +314,60 @@ function bloggerImport(backupXmlFile, outputDir){
                     // console.dir(urlLink[0]);
                     if (urlLink && urlLink[0] && urlLink[0]['$'] && urlLink[0]['$'].href){
                         url = urlLink[0]['$'].href;
-                        var fname = outputDir + '/' + path.basename(url);
-                        fname = fname.replace('.html', '.md')
-                        console.log(fname);
-                        postMap.postName = fname
-                        postMap.fname = fname.replace('.md', '-comments.md');
-                        postMap.comments = [];
-
-
-                        if (entry.content && entry.content[0] && entry.content[0]['_']){
-                            // console.log('content available');
-                            content = entry.content[0]['_'];
-                            markdown = tds.turndown(content);
-                            // console.log(markdown);
-
-                            
-                        }
-
-                        var tagLabel = [];
-                        var tags = [];
-
-                        
-                        tagLabel = entry.category.filter(function (tag){
-                            // console.log(`tagged against :${tag['$'].term}`);
-                            return tag['$'].term && tag['$'].term.indexOf('http://schemas.google')==-1;
-                        });
-                        console.log(`No of category: ${entry.category.length}`);
-                        tagLabel.forEach(function(tag){
-                            // console.log(`tagged against :${tag['$'].term}`);
-                            tags.push(tag['$'].term);
-                        });
-                        
-
-                        console.log(`tags: \n${tags.map(a=> '- '+a).join('\n')}\n`);
-
-                        var tagString='';
-
-                        if(tags.length){
-                            tagString=`tags: \n${tags.map(a=> '- '+a).join('\n')}\n`;
-                        }
-
-                        console.dir(postMap);
-
-                        console.log("\n\n\n\n\n");
-
-                        var alias = url.replace(/^.*\/\/[^\/]+/, '');
-
-                        fileHeader = `---\ntitle: '${title}'\ndate: ${published}\ndraft: false\nurl: ${alias}\n${tagString}---\n`;
-                        fileContent = `${fileHeader}\n${markdown}`;
-
-                        postMap.header = fileHeader;
-                        postMaps[postMap.pid] = postMap;
-
-                        writeToFile(fname, fileContent)
-
                     }
+
+                    var fname = outputDir + '/' + path.basename(sanitizedTitle) + '.md';
+                    console.log(fname);
+                    postMap.postName = fname
+                    postMap.fname = fname.replace('.md', '-comments.md');
+                    postMap.comments = [];
+
+
+                    if (entry.content && entry.content[0] && entry.content[0]['_']){
+                        // console.log('content available');
+                        content = entry.content[0]['_'];
+                        markdown = tds.turndown(content);
+                        // console.log(markdown);
+
+                        
+                    }
+
+                    var tagLabel = [];
+                    var tags = [];
+
+                    
+                    tagLabel = entry.category.filter(function (tag){
+                        // console.log(`tagged against :${tag['$'].term}`);
+                        return tag['$'].term && tag['$'].term.indexOf('http://schemas.google')==-1;
+                    });
+                    console.log(`No of category: ${entry.category.length}`);
+                    tagLabel.forEach(function(tag){
+                        // console.log(`tagged against :${tag['$'].term}`);
+                        tags.push(tag['$'].term);
+                    });
+                    
+
+                    console.log(`tags: \n${tags.map(a=> '- '+a).join('\n')}\n`);
+
+                    var tagString='';
+
+                    if(tags.length){
+                        tagString=`tags: \n${tags.map(a=> '- '+a).join('\n')}\n`;
+                    }
+
+                    console.dir(postMap);
+
+                    console.log("\n\n\n\n\n");
+
+                    var alias = url.replace(/^.*\/\/[^\/]+/, '');
+
+                    fileHeader = `---\ntitle: '${title}'\ndate: ${published}\ndraft: ${draft}\nurl: ${alias}\n${tagString}---\n`;
+                    fileContent = `${fileHeader}\n${markdown}`;
+
+                    postMap.header = fileHeader;
+                    postMaps[postMap.pid] = postMap;
+
+                    writeToFile(fname, fileContent)
                     
                 });
 
