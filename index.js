@@ -109,6 +109,7 @@ function wordpressImport(backupXmlFile, outputDir){
                 var title = '';
                 var content = '';
                 var tags = [];
+                var categories = [];
                 var draft = false;
                 var published = '';
                 var comments = [];
@@ -147,19 +148,27 @@ function wordpressImport(backupXmlFile, outputDir){
                     }
                     
                     tags = [];
+                    categories = [];
 
-                    var categories = post.category;
+                    var wp_categories = post.category;
                     var tagString = '';
+                    var categoryString = '';
 
-                    if (categories && categories.length){
-                        categories.forEach(function (category){
-                            // console.log(category['_']);
-                            tags.push(category['_']);
+                    if (wp_categories && wp_categories.length){
+                        wp_categories.forEach(function (category){
+                            console.log(category);
+                            if(category['$']['domain'] == 'post_tag'){
+                                tags.push(category['$']['nicename']);
+                            }
+                            if(category['$']['domain'] == 'category'){
+                                categories.push(category['$']['nicename']);
+                            }
                         });
 
                         // console.log(tags.join(", "));
                         // tags = tags.join(", ");
                         tagString = 'tags: [\'' + tags.join("', '") + "']\n";
+                        categoryString = 'categories: [\'' + categories.join("', '") + "']\n";
                         // console.log(tagString);
                     }
 
@@ -180,7 +189,7 @@ function wordpressImport(backupXmlFile, outputDir){
                         markdown = tds.turndown(content);
                         // console.log(markdown);
 
-                        fileHeader = `---\ntitle: '${title}'\ndate: ${published}\ndraft: ${draft}\n${tagString}---\n`;
+                        fileHeader = `---\ntitle: '${title}'\ndate: ${published}\ndraft: ${draft}\n${tagString}${categoryString}slug: '${categories[0]}'\n---\n`;
                         fileContent = `${fileHeader}\n${markdown}`;
                         pmap.header = `${fileHeader}\n`;
 
